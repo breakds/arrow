@@ -22,6 +22,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cstdio>
 
 #include "arrow/util/key_value_metadata.h"
 #include "arrow/util/logging.h"
@@ -197,19 +198,30 @@ class RowGroupSerializer : public RowGroupWriter::Contents {
   bool buffered() const override { return buffered_row_group_; }
 
   void Close() override {
+    printf("Close() called!\n");
     if (!closed_) {
+      printf("Start actual closing ...\n");
       closed_ = true;
       CheckRowsWritten();
+      printf("Done CheckRowsWritten()\n");
 
       // Avoid invalid state if ColumnWriter::Close() throws internally.
       auto column_writers = std::move(column_writers_);
+      printf("Done move column writers\n");
       for (size_t i = 0; i < column_writers.size(); i++) {
+        printf("Closing column %zu\n", i);
         if (column_writers[i]) {
           total_bytes_written_ += column_writers[i]->Close();
+          printf("Closed column %zu\n", i);
           total_compressed_bytes_written_ +=
               column_writers[i]->total_compressed_bytes_written();
         }
+        printf("After closing column %zd, total bytes written: %ld, "
+               "total compressed bytes written: %ld\n", i,
+               total_bytes_written_,
+               total_compressed_bytes_written_);
       }
+      printf("num_rows: %ld\n", num_rows_);
 
       // Ensures all columns have been written
       metadata_->set_num_rows(num_rows_);
