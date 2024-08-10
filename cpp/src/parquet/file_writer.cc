@@ -207,10 +207,11 @@ class RowGroupSerializer : public RowGroupWriter::Contents {
 
       // Avoid invalid state if ColumnWriter::Close() throws internally.
       auto column_writers = std::move(column_writers_);
-      printf("Done move column writers\n");
+      printf("There are {} column writers\n", column_writers.size());
       for (size_t i = 0; i < column_writers.size(); i++) {
         printf("Closing column %zu\n", i);
         if (column_writers[i]) {
+          printf("column %zu is not nullptr, start closing ...", i);
           total_bytes_written_ += column_writers[i]->Close();
           printf("Closed column %zu\n", i);
           total_compressed_bytes_written_ +=
@@ -271,6 +272,7 @@ class RowGroupSerializer : public RowGroupWriter::Contents {
     for (int i = 0; i < RowGroupSerializer::num_columns(); i++) {
       auto col_meta = metadata_->NextColumnChunk();
       const int32_t column_ordinal = next_column_index_++;
+      printf("Initialize column %d ...\n", i);
       column_writers_.push_back(CreateColumnWriterForColumn(col_meta, column_ordinal));
     }
   }

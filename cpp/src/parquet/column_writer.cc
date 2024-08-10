@@ -2377,27 +2377,35 @@ std::shared_ptr<ColumnWriter> ColumnWriter::Make(ColumnChunkMetaDataBuilder* met
   }
   switch (descr->physical_type()) {
     case Type::BOOLEAN:
+      printf("  ⇨ Boolean\n");
       return std::make_shared<TypedColumnWriterImpl<BooleanType>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::INT32:
+      printf("  ⇨ INT32\n");
       return std::make_shared<TypedColumnWriterImpl<Int32Type>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::INT64:
+      printf("  ⇨ INT64\n");
       return std::make_shared<TypedColumnWriterImpl<Int64Type>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::INT96:
+      printf("  ⇨ INT96\n");
       return std::make_shared<TypedColumnWriterImpl<Int96Type>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::FLOAT:
+      printf("  ⇨ FLOAT\n");
       return std::make_shared<TypedColumnWriterImpl<FloatType>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::DOUBLE:
+      printf("  ⇨ DOUBLE\n");
       return std::make_shared<TypedColumnWriterImpl<DoubleType>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::BYTE_ARRAY:
+      printf("  ⇨ BYTE_ARRAY\n");
       return std::make_shared<TypedColumnWriterImpl<ByteArrayType>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     case Type::FIXED_LEN_BYTE_ARRAY:
+      printf("  ⇨ FIXED_LEN_BYTE_ARRAY\n");
       return std::make_shared<TypedColumnWriterImpl<FLBAType>>(
           metadata, std::move(pager), use_dictionary, encoding, properties);
     default:
