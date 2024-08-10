@@ -148,6 +148,7 @@ class PARQUET_EXPORT EncodedStatistics {
   // the true minimum for aggregations and there is no way to mark that a
   // value has been truncated and is a lower bound and not in the page.
   void ApplyStatSizeLimits(size_t length) {
+    printf("        ⇨ ApplyStatSizelimits()\n");
     if (max_.length() > length) {
       has_max = false;
       max_.clear();
@@ -156,6 +157,7 @@ class PARQUET_EXPORT EncodedStatistics {
       has_min = false;
       min_.clear();
     }
+    printf("        ⇨ Done ApplyStatSizelimits()\n");    
   }
 
   bool is_set() const {

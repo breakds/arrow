@@ -1097,6 +1097,11 @@ int64_t ColumnWriterImpl::Close() {
 
     EncodedStatistics chunk_statistics = GetChunkStatistics();
     printf("    ⇨ Done GetChunkStatistics()\n");
+    printf("    ⇨ descr_->path = %s\n", descr_->path()->ToDotString().c_str());
+    printf("    ⇨ properties_ = %p, max_row_group_length = %ld\n", properties_,
+           properties_->max_row_group_length());
+    printf("    ⇨ max_statistics_size = %zu\n",
+           properties_->max_statistics_size(descr_->path()));
     chunk_statistics.ApplyStatSizeLimits(
         properties_->max_statistics_size(descr_->path()));
     printf("    ⇨ Done ApplyStatSizeLimits()\n");
