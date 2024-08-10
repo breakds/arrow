@@ -1379,7 +1379,9 @@ class TypedColumnWriterImpl : public ColumnWriterImpl, public TypedColumnWriter<
 
   EncodedStatistics GetChunkStatistics() override {
     EncodedStatistics result;
+    printf("    ⇨ 1. descr_->path().get() = %p\n", descr_->path().get());        
     if (chunk_statistics_) result = chunk_statistics_->Encode();
+    printf("    ⇨ 2. descr_->path().get() = %p\n", descr_->path().get());            
     return result;
   }
 
