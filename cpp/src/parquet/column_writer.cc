@@ -1092,15 +1092,14 @@ int64_t ColumnWriterImpl::Close() {
       WriteDictionaryPage();
       printf("    Finished WriteDictionaryPage()\n");
     }
+    printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());    
 
     FlushBufferedDataPages();
     printf("    ⇨ Done flush\n");
+    printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());        
 
     EncodedStatistics chunk_statistics = GetChunkStatistics();
-    printf("    ⇨ Done GetChunkStatistics()\n");
-    printf("    ⇨ descr_ = %p\n", descr_);
     printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());
-    printf("    ⇨ descr_->path() = %s\n", descr_->path()->ToDotString().c_str());
     chunk_statistics.ApplyStatSizeLimits(
         properties_->max_statistics_size(descr_->path()));
     printf("    ⇨ Done ApplyStatSizeLimits()\n");
