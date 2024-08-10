@@ -67,17 +67,20 @@ std::shared_ptr<ColumnPath> ColumnPath::FromDotString(const std::string& dotstri
 }
 
 std::shared_ptr<ColumnPath> ColumnPath::FromNode(const Node& node) {
+  printf("    ⇨ ColumnPath::FromNode()\n");
   // Build the path in reverse order as we traverse the nodes to the top
   std::vector<std::string> rpath_;
   const Node* cursor = &node;
   // The schema node is not part of the ColumnPath
   while (cursor->parent()) {
+    printf("        ⇨ cursor->name(): %s\n", cursor->name().c_str());
     rpath_.push_back(cursor->name());
     cursor = cursor->parent();
   }
 
   // Build ColumnPath in correct order
   std::vector<std::string> path(rpath_.crbegin(), rpath_.crend());
+  printf("    ⇨ ColumnPath::FromNode() end\n");
   return std::make_shared<ColumnPath>(std::move(path));
 }
 
@@ -110,6 +113,7 @@ const std::vector<std::string>& ColumnPath::ToDotVector() const { return path_; 
 const std::shared_ptr<ColumnPath> Node::path() const {
   // TODO(itaiin): Cache the result, or more precisely, cache ->ToDotString()
   //    since it is being used to access the leaf nodes
+  printf("    ⇨ Node::path()\n");
   return ColumnPath::FromNode(*this);
 }
 
@@ -958,7 +962,9 @@ int ColumnDescriptor::type_length() const { return primitive_node_->type_length(
 
 const std::shared_ptr<ColumnPath> ColumnDescriptor::path() const {
   printf("    ⇨ primitive_node_: %p\n", primitive_node_);
-  return primitive_node_->path();
+  std::shared_ptr<ColumnPath> result = primitive_node_->path();
+  printf("    ⇨ Got path\n");
+  return result;
 }
 
 }  // namespace parquet
