@@ -207,7 +207,7 @@ class RowGroupSerializer : public RowGroupWriter::Contents {
 
       // Avoid invalid state if ColumnWriter::Close() throws internally.
       auto column_writers = std::move(column_writers_);
-      printf("There are {} column writers\n", column_writers.size());
+      printf("There are %zu column writers\n", column_writers.size());
       for (size_t i = 0; i < column_writers.size(); i++) {
         printf("Closing column %zu\n", i);
         if (column_writers[i]) {

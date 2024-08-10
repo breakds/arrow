@@ -1085,22 +1085,32 @@ void ColumnWriterImpl::BuildDataPageV2(int64_t definition_levels_rle_size,
 int64_t ColumnWriterImpl::Close() {
   if (!closed_) {
     closed_ = true;
+    printf("    ⇨ closed_ set to true, has_dictionary_ = %d, fallback_ = %d\n",
+           has_dictionary_, fallback_);
     if (has_dictionary_ && !fallback_) {
       WriteDictionaryPage();
+      printf("    Finished WriteDictionaryPage()\n");
     }
 
     FlushBufferedDataPages();
+    printf("    ⇨ Done flush\n");
 
     EncodedStatistics chunk_statistics = GetChunkStatistics();
+    printf("    ⇨ Done GetChunkStatistics()\n");
     chunk_statistics.ApplyStatSizeLimits(
         properties_->max_statistics_size(descr_->path()));
+    printf("    ⇨ Done ApplyStatSizeLimits()\n");
     chunk_statistics.set_is_signed(SortOrder::SIGNED == descr_->sort_order());
+    printf("    ⇨ Done set_is_signed()\n");
 
     // Write stats only if the column has at least one row written
     if (rows_written_ > 0 && chunk_statistics.is_set()) {
+      printf("    ⇨ Write stats only if the column has at least one row written\n");
       metadata_->SetStatistics(chunk_statistics);
+      printf("    ⇨ Done SetStatistics()\n");
     }
     pager_->Close(has_dictionary_, fallback_);
+    printf("    ⇨ Done pager_->Close()\n");
   }
 
   return total_bytes_written_;
