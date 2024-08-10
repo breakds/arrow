@@ -1096,7 +1096,6 @@ int64_t ColumnWriterImpl::Close() {
 
     FlushBufferedDataPages();
     printf("    ⇨ Done flush\n");
-    printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());        
 
     EncodedStatistics chunk_statistics = GetChunkStatistics();
     printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());
@@ -1120,14 +1119,18 @@ int64_t ColumnWriterImpl::Close() {
 }
 
 void ColumnWriterImpl::FlushBufferedDataPages() {
+  printf("    ⇨ 1. descr_->path().get() = %p\n", descr_->path().get());
   // Write all outstanding data to a new page
   if (num_buffered_values_ > 0) {
     AddDataPage();
+    printf("    ⇨ 2. descr_->path().get() = %p\n", descr_->path().get());
   }
   for (const auto& page_ptr : data_pages_) {
     WriteDataPage(*page_ptr);
+    printf("    ⇨ 3. descr_->path().get() = %p\n", descr_->path().get());
   }
   data_pages_.clear();
+  printf("    ⇨ 4. descr_->path().get() = %p\n", descr_->path().get());
   total_compressed_bytes_ = 0;
 }
 
@@ -1379,9 +1382,7 @@ class TypedColumnWriterImpl : public ColumnWriterImpl, public TypedColumnWriter<
 
   EncodedStatistics GetChunkStatistics() override {
     EncodedStatistics result;
-    printf("    ⇨ 1. descr_->path().get() = %p\n", descr_->path().get());        
     if (chunk_statistics_) result = chunk_statistics_->Encode();
-    printf("    ⇨ 2. descr_->path().get() = %p\n", descr_->path().get());            
     return result;
   }
 
