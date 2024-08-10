@@ -1083,6 +1083,7 @@ void ColumnWriterImpl::BuildDataPageV2(int64_t definition_levels_rle_size,
 }
 
 int64_t ColumnWriterImpl::Close() {
+  printf("  ⇨ ColumnWriterImpl::Close()\n");
   if (!closed_) {
     closed_ = true;
     printf("    ⇨ closed_ set to true, has_dictionary_ = %d, fallback_ = %d\n",

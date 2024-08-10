@@ -73,7 +73,8 @@ std::shared_ptr<ColumnPath> ColumnPath::FromNode(const Node& node) {
   const Node* cursor = &node;
   // The schema node is not part of the ColumnPath
   while (cursor->parent()) {
-    printf("        ⇨ cursor->name(): %s\n", cursor->name().c_str());
+    printf("        ⇨ cursor->name(): %s, parent: %p\n", cursor->name().c_str(),
+           cursor->parent());
     rpath_.push_back(cursor->name());
     cursor = cursor->parent();
   }
