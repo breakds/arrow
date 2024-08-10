@@ -957,6 +957,7 @@ int ColumnDescriptor::type_precision() const {
 int ColumnDescriptor::type_length() const { return primitive_node_->type_length(); }
 
 const std::shared_ptr<ColumnPath> ColumnDescriptor::path() const {
+  printf("    ⇨ primitive_node_: %p\n", primitive_node_);
   return primitive_node_->path();
 }
 
