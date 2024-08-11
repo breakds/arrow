@@ -946,34 +946,53 @@ void ColumnWriterImpl::AddDataPage() {
   int64_t definition_levels_rle_size = 0;
   int64_t repetition_levels_rle_size = 0;
 
+  printf("    ⇨ 1.1\n");
+  descr_->path();
   std::shared_ptr<Buffer> values = GetValuesBuffer();
+  printf("    ⇨ 1.2\n");
+  descr_->path();
   bool is_v1_data_page = properties_->data_page_version() == ParquetDataPageVersion::V1;
+  printf("    ⇨ 1.3\n");
+  descr_->path();
 
   if (descr_->max_definition_level() > 0) {
     definition_levels_rle_size = RleEncodeLevels(
         definition_levels_sink_.data(), definition_levels_rle_.get(),
         descr_->max_definition_level(), /*include_length_prefix=*/is_v1_data_page);
   }
+  printf("    ⇨ 1.4\n");
+  descr_->path();
 
   if (descr_->max_repetition_level() > 0) {
     repetition_levels_rle_size = RleEncodeLevels(
         repetition_levels_sink_.data(), repetition_levels_rle_.get(),
         descr_->max_repetition_level(), /*include_length_prefix=*/is_v1_data_page);
   }
+  printf("    ⇨ 1.5\n");
+  descr_->path();
 
   int64_t uncompressed_size =
       definition_levels_rle_size + repetition_levels_rle_size + values->size();
+  printf("    ⇨ 1.6\n");
+  descr_->path();
 
   if (is_v1_data_page) {
     BuildDataPageV1(definition_levels_rle_size, repetition_levels_rle_size,
                     uncompressed_size, values);
+    printf("    ⇨ 1.7\n");
+    descr_->path();
   } else {
     BuildDataPageV2(definition_levels_rle_size, repetition_levels_rle_size,
                     uncompressed_size, values);
+    printf("    ⇨ 1.8\n");
+    descr_->path();
   }
 
   // Re-initialize the sinks for next Page.
   InitSinks();
+  printf("    ⇨ 1.9\n");
+  descr_->path();
+
   num_buffered_values_ = 0;
   num_buffered_encoded_values_ = 0;
   num_buffered_rows_ = 0;
@@ -1092,7 +1111,7 @@ int64_t ColumnWriterImpl::Close() {
       WriteDictionaryPage();
       printf("    Finished WriteDictionaryPage()\n");
     }
-    printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());    
+    printf("    ⇨ descr_->path().get() = %p\n", descr_->path().get());
 
     FlushBufferedDataPages();
     printf("    ⇨ Done flush\n");
