@@ -946,35 +946,23 @@ void ColumnWriterImpl::AddDataPage() {
   int64_t definition_levels_rle_size = 0;
   int64_t repetition_levels_rle_size = 0;
 
-  printf("    ⇨ 1.1\n");
-  descr_->path();
   std::shared_ptr<Buffer> values = GetValuesBuffer();
-  printf("    ⇨ 1.2\n");
-  descr_->path();
   bool is_v1_data_page = properties_->data_page_version() == ParquetDataPageVersion::V1;
-  printf("    ⇨ 1.3\n");
-  descr_->path();
 
   if (descr_->max_definition_level() > 0) {
     definition_levels_rle_size = RleEncodeLevels(
         definition_levels_sink_.data(), definition_levels_rle_.get(),
         descr_->max_definition_level(), /*include_length_prefix=*/is_v1_data_page);
   }
-  printf("    ⇨ 1.4\n");
-  descr_->path();
 
   if (descr_->max_repetition_level() > 0) {
     repetition_levels_rle_size = RleEncodeLevels(
         repetition_levels_sink_.data(), repetition_levels_rle_.get(),
         descr_->max_repetition_level(), /*include_length_prefix=*/is_v1_data_page);
   }
-  printf("    ⇨ 1.5\n");
-  descr_->path();
 
   int64_t uncompressed_size =
       definition_levels_rle_size + repetition_levels_rle_size + values->size();
-  printf("    ⇨ 1.6\n");
-  descr_->path();
 
   if (is_v1_data_page) {
     BuildDataPageV1(definition_levels_rle_size, repetition_levels_rle_size,
@@ -990,8 +978,6 @@ void ColumnWriterImpl::AddDataPage() {
 
   // Re-initialize the sinks for next Page.
   InitSinks();
-  printf("    ⇨ 1.9\n");
-  descr_->path();
 
   num_buffered_values_ = 0;
   num_buffered_encoded_values_ = 0;
@@ -1006,24 +992,40 @@ void ColumnWriterImpl::BuildDataPageV1(int64_t definition_levels_rle_size,
   // Use Arrow::Buffer::shrink_to_fit = false
   // underlying buffer only keeps growing. Resize to a smaller size does not reallocate.
   PARQUET_THROW_NOT_OK(uncompressed_data_->Resize(uncompressed_size, false));
+  printf("    ⇨ 1.7.1\n");
+  descr_->path();
   ConcatenateBuffers(definition_levels_rle_size, repetition_levels_rle_size, values,
                      uncompressed_data_->mutable_data());
+  printf("    ⇨ 1.7.2\n");
+  descr_->path();
 
   EncodedStatistics page_stats = GetPageStatistics();
+  printf("    ⇨ 1.7.3\n");
+  descr_->path();
   page_stats.ApplyStatSizeLimits(properties_->max_statistics_size(descr_->path()));
+  printf("    ⇨ 1.7.4\n");
+  descr_->path();
   page_stats.set_is_signed(SortOrder::SIGNED == descr_->sort_order());
+  printf("    ⇨ 1.7.5\n");
+  descr_->path();
   ResetPageStatistics();
+  printf("    ⇨ 1.7.6\n");
+  descr_->path();
 
   std::shared_ptr<Buffer> compressed_data;
   if (pager_->has_compressor()) {
     pager_->Compress(*(uncompressed_data_.get()), compressor_temp_buffer_.get());
     compressed_data = compressor_temp_buffer_;
+    printf("    ⇨ 1.7.7\n");
+    descr_->path();
   } else {
     compressed_data = uncompressed_data_;
   }
 
   int32_t num_values = static_cast<int32_t>(num_buffered_values_);
   int64_t first_row_index = rows_written_ - num_buffered_rows_;
+  printf("    ⇨ 1.7.8\n");
+  descr_->path();
 
   // Write the page to OutputStream eagerly if there is no dictionary or
   // if dictionary encoding has fallen back to PLAIN
@@ -1031,16 +1033,27 @@ void ColumnWriterImpl::BuildDataPageV1(int64_t definition_levels_rle_size,
     PARQUET_ASSIGN_OR_THROW(
         auto compressed_data_copy,
         compressed_data->CopySlice(0, compressed_data->size(), allocator_));
+    printf("    ⇨ 1.7.9\n");
+    descr_->path();
     std::unique_ptr<DataPage> page_ptr = std::make_unique<DataPageV1>(
         compressed_data_copy, num_values, encoding_, Encoding::RLE, Encoding::RLE,
         uncompressed_size, std::move(page_stats), first_row_index);
+    printf("    ⇨ 1.7.10\n");
+    descr_->path();
     total_compressed_bytes_ += page_ptr->size() + sizeof(format::PageHeader);
-
+    printf("    ⇨ 1.7.11\n");
+    descr_->path();
     data_pages_.push_back(std::move(page_ptr));
+    printf("    ⇨ 1.7.12\n");
+    descr_->path();
   } else {  // Eagerly write pages
     DataPageV1 page(compressed_data, num_values, encoding_, Encoding::RLE, Encoding::RLE,
                     uncompressed_size, std::move(page_stats), first_row_index);
+    printf("    ⇨ 1.7.13\n");
+    descr_->path();
     WriteDataPage(page);
+    printf("    ⇨ 1.7.14\n");
+    descr_->path();
   }
 }
 
